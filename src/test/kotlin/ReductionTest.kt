@@ -1,5 +1,6 @@
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Ignore
 import org.junit.Test
 
 class ReductionTest {
@@ -46,5 +47,16 @@ class ReductionTest {
     @Test
     fun somePolarOpposite_simpleTrue() {
         assertThat(somePolarOpposite(listOf('a', 'b', 'a', 'A', 'b')), `is`(true))
+    }
+
+    @Test
+    fun reduceUnits_fromFile() {
+        assertThat(reduceUnits("example.txt"), `is`("dabCBAcaDA"))
+    }
+
+    @Test
+    @Ignore
+    fun reduceUnits_part1() {
+        assertThat(reduceUnits("part1.txt"), `is`(""))
     }
 }

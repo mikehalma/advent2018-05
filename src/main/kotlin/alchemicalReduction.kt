@@ -1,3 +1,6 @@
+import java.io.File
+import java.nio.charset.Charset
+
 fun polarOpposites(unit1: Char, unit2: Char): Boolean {
     return unit1.toUpperCase() == unit2 || unit2.toUpperCase() == unit1
 }
@@ -12,16 +15,18 @@ fun reduceUnits(units: List<Char>): List<Char> {
         var skip = false
         raw = raw.windowed(size = 2, partialWindows = true) {
             when {
-                skip -> { skip = false; noUnits()
-                }
+                skip -> { skip = false; noUnits()}
                 isLastUnit(it) -> keepUnit(it)
                 !polarOpposites(it[0], it[1]) -> {skip = false; keepUnit(it)}
-                else -> {skip = true; noUnits()
-                }
+                else -> {skip = true; noUnits()}
             }
         }.flatten().toMutableList()
     }
     return raw
+}
+
+fun reduceUnits(fileName: String):String {
+    return reduceUnits(loadPolymer(fileName)).joinToString(separator = "")
 }
 
 private fun keepUnit(it: List<Char>) = listOf(it[0])
@@ -29,3 +34,7 @@ private fun keepUnit(it: List<Char>) = listOf(it[0])
 private fun noUnits(): List<Char> = listOf()
 
 private fun isLastUnit(it: List<Char>) = it.size == 1
+
+fun loadPolymer(fileName :String) :List<Char> {
+    return File(object {}.javaClass.getResource(fileName).toURI()).readText(Charset.defaultCharset()).toCharArray().toList()
+}
