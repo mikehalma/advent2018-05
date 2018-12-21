@@ -1,6 +1,5 @@
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Ignore
 import org.junit.Test
 
 class ReductionTest {
@@ -25,6 +24,10 @@ class ReductionTest {
         assertThat(polarOpposites('A', 'a'), `is`(true))
     }
 
+    @Test
+    fun polarOpposites_simple2_2upper() {
+        assertThat(polarOpposites('A', 'A'), `is`(false))
+    }
     @Test
     fun reduceUnits_simple() {
         val data = mutableListOf('a', 'b', 'B', 'd')
