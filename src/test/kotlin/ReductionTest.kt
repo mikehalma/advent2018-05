@@ -51,12 +51,16 @@ class ReductionTest {
 
     @Test
     fun reduceUnits_fromFile() {
-        assertThat(reduceUnits("example.txt"), `is`("dabCBAcaDA"))
+        assertThat(reduceUnits("example.txt").joinToString(""), `is`("dabCBAcaDA"))
     }
 
     @Test
-    @Ignore
-    fun reduceUnits_part1() {
-        assertThat(reduceUnits("part1.txt"), `is`(""))
+    fun reduceUnitsSize_fromFile() {
+        assertThat(reduceUnits("example.txt").size   , `is`(10))
+    }
+
+    @Test
+    fun reduceUnitsSize_part1() {
+        assertThat(reduceUnits("part1.txt").size, `is`(11982))
     }
 }

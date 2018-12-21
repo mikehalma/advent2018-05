@@ -9,31 +9,22 @@ fun somePolarOpposite(units: List<Char>): Boolean {
     return units.windowed(size = 2) {polarOpposites(it[0], it[1])}.any {it}
 }
 
+fun getFirstPolarOpposite(units: List<Char>): List<Char> {
+    return units.windowed(size = 2).first {polarOpposites(it[0], it[1])}
+}
+
 fun reduceUnits(units: List<Char>): List<Char> {
     var raw = units.toMutableList()
     while(somePolarOpposite(raw)) {
-        var skip = false
-        raw = raw.windowed(size = 2, partialWindows = true) {
-            when {
-                skip -> { skip = false; noUnits()}
-                isLastUnit(it) -> keepUnit(it)
-                !polarOpposites(it[0], it[1]) -> {skip = false; keepUnit(it)}
-                else -> {skip = true; noUnits()}
-            }
-        }.flatten().toMutableList()
+        val opposites = getFirstPolarOpposite(raw).joinToString("")
+        raw = raw.joinToString("").replaceFirst(opposites, "").toCharArray().toMutableList()
     }
     return raw
 }
 
-fun reduceUnits(fileName: String):String {
-    return reduceUnits(loadPolymer(fileName)).joinToString(separator = "")
+fun reduceUnits(fileName: String):List<Char> {
+    return reduceUnits(loadPolymer(fileName))
 }
-
-private fun keepUnit(it: List<Char>) = listOf(it[0])
-
-private fun noUnits(): List<Char> = listOf()
-
-private fun isLastUnit(it: List<Char>) = it.size == 1
 
 fun loadPolymer(fileName :String) :List<Char> {
     return File(object {}.javaClass.getResource(fileName).toURI()).readText(Charset.defaultCharset()).toCharArray().toList()
