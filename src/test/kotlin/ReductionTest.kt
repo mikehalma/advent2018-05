@@ -56,6 +56,21 @@ class ReductionTest {
     }
 
     @Test
+    fun somePolarOpposite_reversedTrue() {
+        assertThat(somePolarOpposite("abAab"), `is`(true))
+    }
+
+    @Test
+    fun getFirstPolarOpposite_simple_returnsFirst() {
+        assertThat(getFirstPolarOpposite("abaAb"), `is`("aA"))
+    }
+
+    @Test
+    fun getFirstPolarOpposite_upperFirst_returnsFirst() {
+        assertThat(getFirstPolarOpposite("abAab"), `is`("Aa"))
+    }
+
+    @Test
     fun reduceUnits_fromFile() {
         assertThat(reduceUnitsFromFile("example.txt"), `is`("dabCBAcaDA"))
     }
@@ -66,12 +81,12 @@ class ReductionTest {
     }
 
     @Test
+    @Ignore
     fun reduceUnitsSize_part1() {
         assertThat(reduceUnitsFromFile("part1.txt").length, `is`(9562))
     }
 
     @Test
-    @Ignore
     fun reduceUnitsSize_part1Timed() {
         val times = mutableListOf<Long>()
         repeat(10) {

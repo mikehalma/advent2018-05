@@ -10,11 +10,20 @@ fun polarOpposites(unit1: Char, unit2: Char): Boolean {
 }
 
 fun somePolarOpposite(units: String): Boolean {
-    return units.windowed(size = 2) {polarOpposites(it[0], it[1])}.any {it}
+    val lowerFirstRegex = "(\\p{Ll})(?=\\p{Lu})(?i)\\1".toRegex()
+    val upperFirstRegex = "(\\p{Lu})(?=\\p{Ll})(?i)\\1".toRegex()
+    return lowerFirstRegex.containsMatchIn(units)
+        || upperFirstRegex.containsMatchIn(units)
 }
 
 fun getFirstPolarOpposite(units: String): String {
-    return units.windowed(size = 2).first {polarOpposites(it[0], it[1])}
+    val lowerFirstRegex = "(\\p{Ll})(?=\\p{Lu})(?i)\\1".toRegex()
+    val upperFirstRegex = "(\\p{Lu})(?=\\p{Ll})(?i)\\1".toRegex()
+    var result = lowerFirstRegex.find(units)
+    if (result == null || result.groups.isEmpty()) {
+        result = upperFirstRegex.find(units)
+    }
+    return result?.groupValues?.get(0) ?: ""
 }
 
 fun reduceUnits(units: String): String {

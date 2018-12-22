@@ -1,2 +1,3 @@
 2018012022 10:35  Using List<Char>  10 runs  Average: 70988.8ms
 2018012022 10:52  Using String      10 runs  Average: 44843.8ms
+2018012022 12:43  Using Regex       10 runs  Average: 31683.4ms
