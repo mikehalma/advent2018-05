@@ -1,6 +1,9 @@
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Ignore
 import org.junit.Test
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class ReductionTest {
 
@@ -30,40 +33,53 @@ class ReductionTest {
     }
     @Test
     fun reduceUnits_simple() {
-        val data = mutableListOf('a', 'b', 'B', 'd')
-        val expected = listOf('a', 'd')
+        val data = "abBd"
+        val expected = "ad"
         assertThat(reduceUnits(data), `is`(expected))
     }
 
     @Test
     fun reduceUnits_complex() {
-        val data = mutableListOf('a', 'b', 'c', 'd', 'D', 'C', 'd', 'c', 'e', 'c', 'g', 'h', 'E', 'e', 'H', 'G', 'h', 'g', 'd', 'D')
-        val expected = listOf('a', 'b', 'd', 'c', 'e', 'c', 'h', 'g')
+        val data = "abcdDCdcecghEeHGhgdD"
+        val expected = "abdcechg"
         assertThat(reduceUnits(data), `is`(expected))
     }
 
     @Test
     fun somePolarOpposite_none() {
-        assertThat(somePolarOpposite(listOf('a', 'b')), `is`(false))
+        assertThat(somePolarOpposite("ab"), `is`(false))
     }
 
     @Test
     fun somePolarOpposite_simpleTrue() {
-        assertThat(somePolarOpposite(listOf('a', 'b', 'a', 'A', 'b')), `is`(true))
+        assertThat(somePolarOpposite("abaAb"), `is`(true))
     }
 
     @Test
     fun reduceUnits_fromFile() {
-        assertThat(reduceUnits("example.txt").joinToString(""), `is`("dabCBAcaDA"))
+        assertThat(reduceUnitsFromFile("example.txt"), `is`("dabCBAcaDA"))
     }
 
     @Test
     fun reduceUnitsSize_fromFile() {
-        assertThat(reduceUnits("example.txt").size   , `is`(10))
+        assertThat(reduceUnitsFromFile("example.txt").length   , `is`(10))
     }
 
     @Test
     fun reduceUnitsSize_part1() {
-        assertThat(reduceUnits("part1.txt").size, `is`(11982))
+        assertThat(reduceUnitsFromFile("part1.txt").length, `is`(9562))
+    }
+
+    @Test
+    @Ignore
+    fun reduceUnitsSize_part1Timed() {
+        val times = mutableListOf<Long>()
+        repeat(10) {
+            val start = LocalDateTime.now()
+            reduceUnitsFromFile("part1.txt")
+            times.add(start.until(LocalDateTime.now(), ChronoUnit.MILLIS))
+        }
+        times.forEachIndexed { index, l ->  println("Attempt: $index, time: ${l}ms)") }
+        println("Average: ${times.average()}ms")
     }
 }
