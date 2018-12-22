@@ -33,3 +33,23 @@ fun reduceUnitsFromFile(fileName: String):String {
 fun loadPolymer(fileName :String) :String {
     return File(object {}.javaClass.getResource(fileName).toURI()).readText(Charset.defaultCharset())
 }
+
+fun generateOpposites(range: CharRange) :List<String> {
+    return range.map {String(arrayOf(it, it.toUpperCase()).toCharArray())}
+}
+
+fun removeOppositeUnits(units: String, polymer: String): String {
+    val first = units.first().toString()
+    val last = units.toCharArray()[1].toString()
+    var result = polymer.replace(first, "")
+    result = result.replace(last, "")
+    return result
+}
+
+fun reduceWithoutUnits(polymer: String, units: String): String {
+    return reduceUnits(removeOppositeUnits(units, polymer))
+}
+
+fun reduceWithoutUnits(polymer: String, units: List<String>): Map<String, String> {
+    return units.map { it to reduceWithoutUnits(polymer, it) }.toMap()
+}

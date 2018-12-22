@@ -82,4 +82,47 @@ class ReductionTest {
         times.forEachIndexed { index, l ->  println("Attempt: $index, time: ${l}ms)") }
         println("Average: ${times.average()}ms")
     }
+
+    @Test
+    fun generateOpposites_range() {
+        assertThat(generateOpposites('a'..'g'), `is`(listOf("aA", "bB", "cC", "dD" , "eE", "fF", "gG")))
+    }
+
+    @Test
+    fun removeOppositeUnits_simple() {
+        assertThat(removeOppositeUnits("aA", "dabAcCaCBAcCcaDA"), `is`("dbcCCBcCcD"))
+    }
+
+    @Test
+    fun reduceWithoutUnits_simple() {
+        assertThat(reduceWithoutUnits("dabAcCaCBAcCcaDA", generateOpposites('a'..'a').first()), `is`("dbCBcD"))
+    }
+
+    @Test
+    fun reduceWithoutUnits_list() {
+        val expected = mapOf("aA" to "dbCBcD", "bB" to "daCAcaDA", "cC" to "daDA", "dD" to "abCBAc")
+        val actual = reduceWithoutUnits("dabAcCaCBAcCcaDA", generateOpposites('a'..'d'))
+        assertThat(actual, `is`(expected))
+    }
+
+    @Test
+    fun reduceWithoutUnitsSize_example() {
+        val actual = reduceWithoutUnits("dabAcCaCBAcCcaDA", generateOpposites('a'..'d'))
+        assertThat(actual.minBy { (_, reducedPolymer) -> reducedPolymer.length }?.value?.length, `is`(4))
+    }
+
+    @Test
+    fun reduceWithoutUnitsSize_fromFile() {
+        val actual = reduceWithoutUnits(loadPolymer("example2.txt"), generateOpposites('a'..'d'))
+        assertThat(actual.minBy { (_, reducedPolymer) -> reducedPolymer.length }?.value?.length, `is`(4))
+    }
+
+    @Test
+    @Ignore
+    fun reduceWithoutUnitsSize_part2() {
+        val actual = reduceWithoutUnits(loadPolymer("part1.txt"), generateOpposites('a'..'z'))
+        assertThat(actual.minBy { (_, reducedPolymer) -> reducedPolymer.length }?.value?.length, `is`(4))
+    }
+
+
 }
