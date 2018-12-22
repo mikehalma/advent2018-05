@@ -1,3 +1,5 @@
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.nio.charset.Charset
 
@@ -9,19 +11,18 @@ fun polarOpposites(unit1: Char, unit2: Char): Boolean {
     }
 }
 
+private val LOWER_FIRST_REGEX = "(\\p{Ll})(?=\\p{Lu})(?i)\\1".toRegex()
+private val UPPER_FIRST_REGEX = "(\\p{Lu})(?=\\p{Ll})(?i)\\1".toRegex()
+
 fun somePolarOpposite(units: String): Boolean {
-    val lowerFirstRegex = "(\\p{Ll})(?=\\p{Lu})(?i)\\1".toRegex()
-    val upperFirstRegex = "(\\p{Lu})(?=\\p{Ll})(?i)\\1".toRegex()
-    return lowerFirstRegex.containsMatchIn(units)
-        || upperFirstRegex.containsMatchIn(units)
+    return LOWER_FIRST_REGEX.containsMatchIn(units)
+        || UPPER_FIRST_REGEX.containsMatchIn(units)
 }
 
 fun getFirstPolarOpposite(units: String): String {
-    val lowerFirstRegex = "(\\p{Ll})(?=\\p{Lu})(?i)\\1".toRegex()
-    val upperFirstRegex = "(\\p{Lu})(?=\\p{Ll})(?i)\\1".toRegex()
-    var result = lowerFirstRegex.find(units)
+    var result = LOWER_FIRST_REGEX.find(units)
     if (result == null || result.groups.isEmpty()) {
-        result = upperFirstRegex.find(units)
+        result = UPPER_FIRST_REGEX.find(units)
     }
     return result?.groupValues?.get(0) ?: ""
 }
@@ -56,9 +57,16 @@ fun removeOppositeUnits(units: String, polymer: String): String {
 }
 
 fun reduceWithoutUnits(polymer: String, units: String): String {
-    return reduceUnits(removeOppositeUnits(units, polymer))
+    val result = reduceUnits(removeOppositeUnits(units, polymer))
+    return result
 }
 
-fun reduceWithoutUnits(polymer: String, units: List<String>): Map<String, String> {
-    return units.map { it to reduceWithoutUnits(polymer, it) }.toMap()
+fun reduceWithoutUnits(polymer: String, units: List<String>): List<String> {
+    return (0.until(units.size)).pmap {
+        reduceWithoutUnits(polymer, units[it])
+    }
+}
+
+fun <A, B>Iterable<A>.pmap(f: suspend (A) -> B): List<B> = runBlocking {
+    map { async { f(it) } }.map { it.await() }
 }

@@ -1,9 +1,11 @@
+import kotlinx.coroutines.delay
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Ignore
 import org.junit.Test
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
+import kotlin.system.measureTimeMillis
 
 class ReductionTest {
 
@@ -87,15 +89,18 @@ class ReductionTest {
     }
 
     @Test
+    @Ignore
     fun reduceUnitsSize_part1Timed() {
-        val times = mutableListOf<Long>()
-        repeat(10) {
+        val totalTimeStart = LocalDateTime.now()
+        val times = mutableMapOf<LocalDateTime, Long>()
+        (1..10).map {
             val start = LocalDateTime.now()
             reduceUnitsFromFile("part1.txt")
-            times.add(start.until(LocalDateTime.now(), ChronoUnit.MILLIS))
+            times.put(LocalDateTime.now(), start.until(LocalDateTime.now(), ChronoUnit.MILLIS))
         }
-        times.forEachIndexed { index, l ->  println("Attempt: $index, time: ${l}ms)") }
-        println("Average: ${times.average()}ms")
+        times.values.forEachIndexed{ index, l ->  println("Attempt: $index, time: ${l}ms)") }
+        println("Average: ${times.values.average()}ms")
+        println("Total time: ${totalTimeStart.until(LocalDateTime.now(), ChronoUnit.MILLIS)}")
     }
 
     @Test
@@ -115,7 +120,7 @@ class ReductionTest {
 
     @Test
     fun reduceWithoutUnits_list() {
-        val expected = mapOf("aA" to "dbCBcD", "bB" to "daCAcaDA", "cC" to "daDA", "dD" to "abCBAc")
+        val expected = listOf("dbCBcD", "daCAcaDA", "daDA", "abCBAc")
         val actual = reduceWithoutUnits("dabAcCaCBAcCcaDA", generateOpposites('a'..'d'))
         assertThat(actual, `is`(expected))
     }
@@ -123,20 +128,34 @@ class ReductionTest {
     @Test
     fun reduceWithoutUnitsSize_example() {
         val actual = reduceWithoutUnits("dabAcCaCBAcCcaDA", generateOpposites('a'..'d'))
-        assertThat(actual.minBy { (_, reducedPolymer) -> reducedPolymer.length }?.value?.length, `is`(4))
+        assertThat(actual.minBy { reducedPolymer -> reducedPolymer.length }?.length, `is`(4))
     }
 
     @Test
     fun reduceWithoutUnitsSize_fromFile() {
         val actual = reduceWithoutUnits(loadPolymer("example2.txt"), generateOpposites('a'..'d'))
-        assertThat(actual.minBy { (_, reducedPolymer) -> reducedPolymer.length }?.value?.length, `is`(4))
+        assertThat(actual.minBy { reducedPolymer -> reducedPolymer.length }?.length, `is`(4))
     }
 
     @Test
-    @Ignore
     fun reduceWithoutUnitsSize_part2() {
         val actual = reduceWithoutUnits(loadPolymer("part1.txt"), generateOpposites('a'..'z'))
-        assertThat(actual.minBy { (_, reducedPolymer) -> reducedPolymer.length }?.value?.length, `is`(4))
+        assertThat(actual.minBy { reducedPolymer -> reducedPolymer.length }?.length, `is`(4934))
+    }
+
+    @Test
+    fun pmap_isParallel() {
+        val killParallel = "dead"
+        val time = measureTimeMillis {
+            val output = (1..100).pmap {
+                println("$killParallel starting at ${LocalDateTime.now()}")
+                delay(1000)
+                it * 2
+            }
+
+            println(output)
+        }
+        println("Total time: $time")
     }
 
 

@@ -15,6 +15,7 @@ repositories {
 dependencies {
     compile(kotlin("stdlib-jdk8"))
     testCompile("junit", "junit", "4.12")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.0")
 }
 
 configure<JavaPluginConvention> {
